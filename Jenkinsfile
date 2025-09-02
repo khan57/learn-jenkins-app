@@ -48,29 +48,29 @@ pipeline {
                     }
                 }
 
-                // stage('E2E') {
-                //     agent {
-                //         docker {
-                //             image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
-                //             reuseNode true
-                //         }
-                //     }
+                stage('E2E') {
+                    agent {
+                        docker {
+                            image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                            reuseNode true
+                        }
+                    }
 
-                //     steps {
-                //         sh '''
-                //             npm install serve
-                //             node_modules/.bin/serve -s build &
-                //             sleep 10
-                //             npx playwright test  --reporter=html
-                //         '''
-                //     }
+                    steps {
+                        sh '''
+                            npm install serve
+                            node_modules/.bin/serve -s build &
+                            sleep 10
+                            npx playwright test  --reporter=html
+                        '''
+                    }
 
-                //     post {
-                //         always {
-                //             publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright local', reportTitles: '', useWrapperFileDirectly: true])
-                //         }
-                //     }
-                // }
+                    post {
+                        always {
+                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright local', reportTitles: '', useWrapperFileDirectly: true])
+                        }
+                    }
+                }
             }
         }
 
@@ -153,31 +153,31 @@ pipeline {
             }
         }
 
-//         stage('Prod E2E') {
-//             agent {
-//                 docker {
-//                     image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
-//                     reuseNode true
-//                 }
-//             }
+        stage('Prod E2E') {
+            agent {
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    reuseNode true
+                }
+            }
 
-//             environment {
+            environment {
 
-//                        CI_ENVIRONMENT_URL = 'https://lovely-valkyrie-66a5b9.netlify.app'
+                       CI_ENVIRONMENT_URL = 'https://lovely-valkyrie-66a5b9.netlify.app'
                        
-//                       }
+                      }
 
-//             steps {
-//                 sh '''
-//                     npx playwright test  --reporter=html
-//                 '''
-//             }
+            steps {
+                sh '''
+                    npx playwright test  --reporter=html
+                '''
+            }
 
-//             post {
-//                 always {
-//                     publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright e2e production', reportTitles: '', useWrapperFileDirectly: true])
-//                 }
-//             }
-// }
+            post {
+                always {
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright e2e production', reportTitles: '', useWrapperFileDirectly: true])
+                }
+            }
+}
     }
 }
