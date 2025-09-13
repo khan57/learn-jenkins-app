@@ -28,25 +28,49 @@ pipeline {
             }
         }
 
+        // stage('Build Docker Image') {
+        //     agent {
+        //         docker {
+        //             image 'amazon/aws-cli'
+        //             reuseNode true
+        //             args "-u root -v /var/run/docker.sock:/var/run/docker.sock --entrypoint=''"
+        //         }
+        //     }
+        //     steps {
+
+        //         sh '''
+        //             amazon-linux-extras install docker
+        //             docker build -t myjenkinsapp -f Dockerfile .
+        //         '''
+                
+               
+        //     }
+        // }
+
         stage('Build Docker Image') {
             agent {
                 docker {
-                    image 'amazon/aws-cli'
+                    image 'docker:20.10'   // Docker CLI image
+                    args "-v /var/run/docker.sock:/var/run/docker.sock"
                     reuseNode true
-                    args "-u root -v /var/run/docker.sock:/var/run/docker.sock --entrypoint=''"
                 }
             }
             steps {
-
                 sh '''
-                    yum install -y amazon-linux-extras
-                    amazon-linux-extras install docker
+                    docker version
                     docker build -t myjenkinsapp -f Dockerfile .
+
+                            
+                    apk add --no-cache python3 py3-pip
+                    pip3 install awscli
+
+                    # Authenticate with ECR
+                    aws --version
                 '''
-                
-               
             }
         }
+
+
 
         stage('Deploy to AWS') {
             agent {
