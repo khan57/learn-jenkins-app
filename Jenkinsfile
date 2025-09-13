@@ -39,18 +39,20 @@ pipeline {
                 }
             }
             steps {
-                sh '''
-                    docker version
-                    docker build -t $AWS_ECR_REPOSITORY/$APP_NAME:$REACT_APP_VERSION -f Dockerfile .
+                withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+                    sh '''
+                        docker version
+                        docker build -t $AWS_ECR_REPOSITORY/$APP_NAME:$REACT_APP_VERSION -f Dockerfile .
 
-                    apk add --no-cache python3 py3-pip
-                    pip3 install awscli
+                        apk add --no-cache python3 py3-pip
+                        pip3 install awscli
 
-                    # Authenticate with ECR
-                    aws --version
-                    aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ECR_REPOSITORY
-                    docker push $AWS_ECR_REPOSITORY/$APP_NAME:$REACT_APP_VERSION
-                '''
+                        # Authenticate with ECR
+                        aws --version
+                        aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ECR_REPOSITORY
+                        docker push $AWS_ECR_REPOSITORY/$APP_NAME:$REACT_APP_VERSION
+                    '''
+                }
             }
         }
 
