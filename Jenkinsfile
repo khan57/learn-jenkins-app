@@ -9,7 +9,32 @@ pipeline {
     }
     stages {
 
-                  stage('Deploy to AWS') {
+         stage('Build') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    ls -la
+                    node --version
+                    npm --version
+                    npm ci
+                    npm run build
+                    ls -la
+                '''
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t -f Dockerfile myjenkinsapp .'
+            }
+        }
+
+        stage('Deploy to AWS') {
             agent {
                 docker {
                     image 'amazon/aws-cli:2.28.23'
@@ -17,6 +42,8 @@ pipeline {
                     args "-u root --entrypoint=''"
                 }
             }
+
+        
 
             steps {
                 withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
@@ -35,24 +62,7 @@ pipeline {
         }
 
 
-        stage('Build') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
-            steps {
-                sh '''
-                    ls -la
-                    node --version
-                    npm --version
-                    npm ci
-                    npm run build
-                    ls -la
-                '''
-            }
-        }
+ 
 
 
 
