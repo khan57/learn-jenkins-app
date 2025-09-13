@@ -1,11 +1,12 @@
 pipeline {
     agent any
-    environment {
+        APP_NAME = 'myjenkinsapp'
         REACT_APP_VERSION = "1.0.${BUILD_ID}"
         AWS_DEFAULT_REGION = 'us-east-1'
         AWS_ECS_CLUSTER = 'LearnJenkinsApp-cluster-prod'
         AWS_ECS_SERVICE = 'LearnJenkinsApp-Service-Prod'
         AWS_ECS_TASK_DEFINITION = 'LearnJenkinsApp-TaskDefinition-Prod'
+        AWS_ECR_REPOSITORY = '169865926213.dkr.ecr.us-east-1.amazonaws.com'
     }
     stages {
 
@@ -58,7 +59,7 @@ pipeline {
             steps {
                 sh '''
                     docker version
-                    docker build -t myjenkinsapp -f Dockerfile .
+                    docker build -t $AWS_ECR_REPOSITORY/$APP_NAME:$REACT_APP_VERSION -f Dockerfile .
 
                             
                     apk add --no-cache python3 py3-pip
